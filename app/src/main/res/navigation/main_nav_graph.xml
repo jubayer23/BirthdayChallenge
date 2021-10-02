@@ -16,7 +16,8 @@
 
             <argument
                 android:name="NameDob"
-                app:argType="com.android.birthdaychallenge.data.models.Result" />
+                app:argType="com.android.birthdaychallenge.data.models.Result"
+                app:nullable="true" />
         </action>
     </fragment>
 

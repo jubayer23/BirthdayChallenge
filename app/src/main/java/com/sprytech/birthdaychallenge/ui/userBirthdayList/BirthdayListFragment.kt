@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import com.android.birthdaychallenge.data.models.Dob
 import com.android.birthdaychallenge.data.models.Name
 import com.android.birthdaychallenge.data.models.Result
@@ -12,30 +14,68 @@ import com.sprytech.birthdaychallenge.R
 import com.sprytech.birthdaychallenge.databinding.FragmentBirthdayListBinding
 import com.sprytech.birthdaychallenge.ui.base.BaseFragment
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+
 /**
  * A simple [Fragment] subclass.
  * Use the [BirthdayListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BirthdayListFragment : BaseFragment<FragmentBirthdayListBinding>() {
+@AndroidEntryPoint
+class BirthdayListFragment : BaseFragment<FragmentBirthdayListBinding>(), OnListItemClickListener {
+
+    private val homeViewModel: BirthdayListViewModel by viewModels()
+    private var homeDataAdapter: BirthdayListAdapter = BirthdayListAdapter(this)
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.tvHi.setOnClickListener{
 
-            val name : Name = Name("asd", "sad", "sd")
-            val dob : Dob = Dob(12, "23-44")
-            val result : Result = Result(1, dob, name)
-            // 1
+        initRecyclerView()
+        observeHomeData()
 
 
 
-// 2
-            val directions = BirthdayListFragmentDirections.actionBirthdayListFragmentToBirthdayDetailsFragment(result)
-            findNavController().navigate(directions)
-        }
+
+
+
+    }
+
+
+
+    private fun initRecyclerView() {
+        binding.rvHome.adapter = homeDataAdapter
+    }
+
+    private fun observeHomeData() {
+
+
+        homeViewModel.restaurants.observe(viewLifecycleOwner, { result ->
+
+            //restaurantAdapter.submitList(result.data)
+            homeDataAdapter.submitList(result.data)
+
+            binding.tvNoInternet.visibility = View.GONE
+            binding.btnRetry.visibility = View.GONE
+
+        })
+
+
+
+
+    }
+
+
+
+
+    override fun onItemClick(position: Int, item: Result?, view: View) {
+        val bundle = Bundle()
+
+        val directions = BirthdayListFragmentDirections.actionBirthdayListFragmentToBirthdayDetailsFragment(item)
+        findNavController().navigate(directions)
+
 
     }
 
